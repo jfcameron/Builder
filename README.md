@@ -1,0 +1,2 @@
+# CppProjectTemplate
+CMake project template
