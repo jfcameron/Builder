@@ -6,7 +6,7 @@ include("lib/json.cmake")
 include("lib/filter.cmake")
 
 # Check bash args, bail if required are not present
-if (NOT DEFINED PLATFORM OR ${PLATFORM} STREQUAL "")
+if (NOT DEFINED PLATFORM OR PLATFORM STREQUAL "")
     debug_error("A platform must be selected! Insure -DPLATFORM=\"PlatformName\" arg is present in cmake call!")
 endif()
 
