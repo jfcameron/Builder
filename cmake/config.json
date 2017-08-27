@@ -2,10 +2,5 @@
     "ProjectName" : "ExampleProject",
     "MajorVersion" : "0",
     "MinorVersion" : "1",
-    "StaticLibraries" : 
-    [
-        "../lib/one",
-        "../lib/two",
-        "../lib/three"
-    ]
+    "StaticLibraries" : ["../lib/one","../lib/two","../lib/three"]
 }
