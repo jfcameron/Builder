@@ -41,12 +41,10 @@ log("config.json: \n"+pretty)
 def cmakeArg(aName, aValue):
     return '-D' + str(aName) + '=' + aValue
 
-
-
 subprocess.call([ 
     'cmake',_CMakeDir, 
     '-G' + args.generator, 
-    cmakeArg("PLATFORM",args.platform),
+    cmakeArg("Args.Platform",args.platform),
     cmakeArg("Config.ProjectName",config["ProjectName"]),
     cmakeArg("Config.IncludePaths", '\n'.join(config["IncludePaths"]))
 ])

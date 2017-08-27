@@ -1,14 +1,16 @@
-# Purpose: Generates project files for the given generator
+# Purpose: Generates project files using the given generator
+# Variables prefixed with Args.* and Config.* are required commandline arguments
+# and are most conveniently supplied via the accompanying python script "PreCMakelists.py"
 # Usage: Do not use directly, instead run PreCMakelists.py
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 2.4)
 cmake_policy(SET CMP0037 NEW)
 
 include("lib/debug.cmake")
 include("lib/filter.cmake")
 
 # Check bash args, bail if required are not present
-if (NOT DEFINED PLATFORM OR PLATFORM STREQUAL "")
-    debug_error("A platform must be selected! Insure -DPLATFORM=\"PlatformName\" arg is present in cmake call!")
+if (NOT DEFINED Args.Platform OR Args.Platform STREQUAL "")
+    debug_error("A platform must be selected! Insure -DArgs.Platform=\"PlatformName\" arg is present in cmake call!")
 endif()
 
 # Set consts
@@ -27,12 +29,12 @@ endforeach()
 filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
 # Collect, sort platform files, warn on 0
-file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${SOURCE_ROOT}/${PLATFORM}/*.cpp" "${SOURCE_ROOT}/${PLATFORM}/*.h")
+file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${SOURCE_ROOT}/${Args.Platform}/*.cpp" "${SOURCE_ROOT}/${Args.Platform}/*.h")
 list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
 if (platformSpecificSourceFileCount LESS "1")
-    debug_warn("There are no platform specific files (${PLATFORM}). Is this correct?")
+    debug_warn("There are no platform specific files (${Args.Platform}). Is this correct?")
 endif()
-debug_log("Platform specific files (${PLATFORM}, ${platformSpecificSourceFileCount}):")
+debug_log("Platform specific files (${Args.Platform}, ${platformSpecificSourceFileCount}):")
 foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
     debug_log(${file_path})
 endforeach()
@@ -44,10 +46,11 @@ if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
 endif()
 
 # Set up include paths
-debug_log("Include paths: ${Config.IncludePaths}")
+#debug_log("Include paths: ${Config.IncludePaths}")
 include_directories(BEFORE SYSTEM "${Config.IncludePaths}")
-include_directories(BEFORE "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
+include_directories(BEFORE "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${Args.Platform}")
 
 # Build the project
 project ("${Config.ProjectName}")
-add_executable("${Config.ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
+#add_executable("${Config.ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
+add_library("${Config.ProjectName}" STATIC ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
