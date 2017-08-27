@@ -1,1 +1,1 @@
-cmake ../../cmake/ -G "Xcode" #-DPLATFORM="osx"
+cmake ../../cmake/ -G "Xcode" -DPLATFORM="osx"

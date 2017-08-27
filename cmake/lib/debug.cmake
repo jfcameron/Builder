@@ -11,3 +11,8 @@ function(debug_error aMessage)
     message("Error: ${aMessage}")
     return()
 endfunction()
+
+function(debug_warn aMessage)
+    message("Warning: ${aMessage}")
+    return()
+endfunction()

@@ -6,7 +6,7 @@ include("lib/json.cmake")
 include("lib/filter.cmake")
 
 # Check bash args, bail if required are not present
-if (${PLATFORM} STREQUAL "")
+if (NOT DEFINED PLATFORM OR ${PLATFORM} STREQUAL "")
     debug_error("A platform must be selected! Insure -DPLATFORM=\"PlatformName\" arg is present in cmake call!")
     return()
 endif()
@@ -26,26 +26,34 @@ endforeach()
 set(SOURCE_ROOT "../src")
 
 #Collect, sort and print common files
-file(GLOB_RECURSE COMMON_SOURCE_FILES
-    "${SOURCE_ROOT}/common/*.cpp"
-    "${SOURCE_ROOT}/common/*.h"
-)
-debug_log("Common files:")
+file(GLOB_RECURSE COMMON_SOURCE_FILES "${SOURCE_ROOT}/common/*.cpp" "${SOURCE_ROOT}/common/*.h")
+list(LENGTH COMMON_SOURCE_FILES commonSourceFileCount)
+if (commonSourceFileCount LESS "1")
+    debug_warn("There are no common files. Is this correct?")
+endif()
+debug_log("Common files (${commonSourceFileCount}):")
 foreach(file_path ${COMMON_SOURCE_FILES})
     debug_log(${file_path})
 endforeach()
 filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
 #Collect, sort and print platform files
-file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES
-    "${SOURCE_ROOT}/${PLATFORM}/*.cpp"
-    "${SOURCE_ROOT}/${PLATFORM}/*.h"
-)
+file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${SOURCE_ROOT}/${PLATFORM}/*.cpp" "${SOURCE_ROOT}/${PLATFORM}/*.h")
+list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
+if (platformSpecificSourceFileCount LESS "1")
+    debug_warn("There are no platform specific files (${PLATFORM}). Is this correct?")
+endif()
 debug_log("Platform specific files (${PLATFORM}):")
 foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
     debug_log(${file_path})
 endforeach()
 filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})
+
+#Throw an error if there are no source files present in the project
+if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
+    debug_error("There are no source files in the project!")
+    return()
+endif()
 
 #Build the project
 project ("${Config.ProjectName}")
