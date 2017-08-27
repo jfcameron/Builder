@@ -52,8 +52,11 @@ if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
     debug_error("There are no source files in the project!")
 endif()
 
-# Set up user include paths
-include_directories(BEFORE USER "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
+# Set up include paths
+include_directories(BEFORE USER   "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
+include_directories(BEFORE SYSTEM "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}") #SYSTEM_INCLUDES
+
+
 
 # Build the project
 project ("${Config.ProjectName}")
