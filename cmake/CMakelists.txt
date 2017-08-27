@@ -1,48 +1,49 @@
 cmake_minimum_required (VERSION 3.1)
 cmake_policy(SET CMP0037 NEW)
 
-include("lib/JSONParser.cmake")
-include("lib/sourcegroupassigner.cmake")
+include("lib/debug.cmake")
+include("lib/json.cmake")
+include("lib/filter.cmake")
 
-file(STRINGS ./config.json config)
-sbeParseJson(example config)
+# Check bash args, bail if required are not present
+if (NOT DEFINED ${PLATFORM})
+    debug_error("A platform must be selected!")
+    #return()
+endif()
 
-# Now you can use parsed variables.
-foreach(var ${example})
-    message("${var} = ${${var}}")
+# Parse Config.json
+file(STRINGS ./config.json configFileString)
+json_parse(Config configFileString)
+debug_log("Config json:")
+foreach(var ${Config})
+    debug_log("${var} = ${${var}}")
 endforeach()
-
-#return()
 
 #Set consts
 set(SOURCE_ROOT "../src")
-set(ProjectName "GDK")
 
 #Collect, sort and print common files
 file(GLOB_RECURSE COMMON_SOURCE_FILES
     "${SOURCE_ROOT}/common/*.cpp"
     "${SOURCE_ROOT}/common/*.h"
 )
-
-message("Common files:")
+debug_log("Common files:")
 foreach(file_path ${COMMON_SOURCE_FILES})
-    message(${file_path})
+    debug_log(${file_path})
 endforeach()
-assign_source_group(${COMMON_SOURCE_FILES})
+filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
 #Collect, sort and print platform files
-if (NOT ${PLATFORM} STREQUAL "")
-    file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES
-        "${SOURCE_ROOT}/${PLATFORM}/*.cpp"
-        "${SOURCE_ROOT}/${PLATFORM}/*.h"
-    )
-    message("${PLATFORM} specific files:")
-    foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
-        message(${file_path})
-    endforeach()
-    assign_source_group(${PLATFORM_SPECIFIC_SOURCE_FILES})
-endif()
+file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES
+    "${SOURCE_ROOT}/${PLATFORM}/*.cpp"
+    "${SOURCE_ROOT}/${PLATFORM}/*.h"
+)
+debug_log("${PLATFORM} specific files:")
+foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
+    debug_log(${file_path})
+endforeach()
+filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})
 
 #Build the project
-project ("${ProjectName}")
-add_executable("${ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
+project ("${Config.ProjectName}")
+add_executable("${Config.ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})

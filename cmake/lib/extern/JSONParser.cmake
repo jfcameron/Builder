@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.1)
 if (DEFINED JSonParserGuard)
     return()
 endif()
-
 set(JSonParserGuard yes)
 
 macro(sbeParseJson prefix jsonString)
