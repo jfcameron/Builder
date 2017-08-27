@@ -44,7 +44,8 @@ def cmakeArg(aName, aValue):
 subprocess.call([ 
     'cmake',_CMakeDir, 
     '-G' + args.generator, 
-    cmakeArg("Args.Platform",args.platform),
-    cmakeArg("Config.ProjectName",config["ProjectName"]),
+    cmakeArg("Args.Platform", args.platform),
+    cmakeArg("Config.ProjectName", config["ProjectName"]),
+    cmakeArg("Config.ProjectType", config["ProjectType"]),
     cmakeArg("Config.IncludePaths", '\n'.join(config["IncludePaths"]))
 ])
