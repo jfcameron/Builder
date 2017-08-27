@@ -8,14 +8,12 @@ include("lib/filter.cmake")
 # Check bash args, bail if required are not present
 if (NOT DEFINED PLATFORM OR ${PLATFORM} STREQUAL "")
     debug_error("A platform must be selected! Insure -DPLATFORM=\"PlatformName\" arg is present in cmake call!")
-    return()
 endif()
 
 # Parse Config.json, bail if malformed or not present
 json_parse(Config "./config.json")
 if (NOT DEFINED Config)
     debug_error("Config.json is malformed or is not present!")
-    return()
 endif()
 debug_log("Config json:")
 foreach(var ${Config})
@@ -43,7 +41,7 @@ list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
 if (platformSpecificSourceFileCount LESS "1")
     debug_warn("There are no platform specific files (${PLATFORM}). Is this correct?")
 endif()
-debug_log("Platform specific files (${PLATFORM}):")
+debug_log("Platform specific files (${PLATFORM}, ${platformSpecificSourceFileCount}):")
 foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
     debug_log(${file_path})
 endforeach()
@@ -52,7 +50,6 @@ filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})
 #Throw an error if there are no source files present in the project
 if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
     debug_error("There are no source files in the project!")
-    return()
 endif()
 
 #Build the project

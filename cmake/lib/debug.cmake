@@ -4,15 +4,13 @@ endif()
 set(_LOG_CMAKE yes)
 
 function(debug_log aMessage)
-    message("Log: ${aMessage}")
+    message(STATUS "Log: ${aMessage}")
 endfunction()
 
 function(debug_error aMessage)
-    message("Error: ${aMessage}")
-    return()
+    message(FATAL_ERROR "Error: ${aMessage}")
 endfunction()
 
 function(debug_warn aMessage)
-    message("Warning: ${aMessage}")
-    return()
+    message(WARNING "Warning: ${aMessage}")
 endfunction()
