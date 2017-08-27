@@ -1,19 +1,12 @@
 cmake_minimum_required (VERSION 2.8.10)
-
-#Get commandline args
-message("PLATFORM: ${PLATFORM}")
-
-#Const
-set(SOURCE_ROOT "../src")
-set(ProjectName "GDK")
-
-message("ProjectName: " "${ProjectName}")
-
 cmake_policy(SET CMP0037 NEW)
 
+include("./JSONParser.cmake")
 include("./sourcegroupassigner.cmake")
 
-
+#Set consts
+set(SOURCE_ROOT "../src")
+set(ProjectName "GDK")
 
 #Collect, sort and print common files
 file(GLOB_RECURSE COMMON_SOURCE_FILES
