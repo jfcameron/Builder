@@ -6,14 +6,17 @@ include("lib/json.cmake")
 include("lib/filter.cmake")
 
 # Check bash args, bail if required are not present
-if (NOT DEFINED ${PLATFORM})
-    debug_error("A platform must be selected!")
-    #return()
+if (${PLATFORM} STREQUAL "")
+    debug_error("A platform must be selected! Insure -DPLATFORM=\"PlatformName\" arg is present in cmake call!")
+    return()
 endif()
 
-# Parse Config.json
-file(STRINGS ./config.json configFileString)
-json_parse(Config configFileString)
+# Parse Config.json, bail if malformed or not present
+json_parse(Config "./config.json")
+if (NOT DEFINED Config)
+    debug_error("Config.json is malformed or is not present!")
+    return()
+endif()
 debug_log("Config json:")
 foreach(var ${Config})
     debug_log("${var} = ${${var}}")
@@ -38,7 +41,7 @@ file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES
     "${SOURCE_ROOT}/${PLATFORM}/*.cpp"
     "${SOURCE_ROOT}/${PLATFORM}/*.h"
 )
-debug_log("${PLATFORM} specific files:")
+debug_log("Platform specific files (${PLATFORM}):")
 foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
     debug_log(${file_path})
 endforeach()
