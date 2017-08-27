@@ -1,47 +1,45 @@
 cmake_minimum_required (VERSION 2.8.10)
 
+#Get commandline args
+message("PLATFORM: ${PLATFORM}")
+
+#Const
 set(SOURCE_ROOT "../src")
+set(ProjectName "GDK")
 
-get_cmake_property(CACHE_VARS CACHE_VARIABLES)
-foreach(CACHE_VAR ${CACHE_VARS})
-  get_property(CACHE_VAR_HELPSTRING CACHE ${CACHE_VAR} PROPERTY HELPSTRING)
-  if(CACHE_VAR_HELPSTRING STREQUAL "No help, variable specified on the command line.")
-    get_property(CACHE_VAR_TYPE CACHE ${CACHE_VAR} PROPERTY TYPE)
-    if(CACHE_VAR_TYPE STREQUAL "UNINITIALIZED")
-      set(CACHE_VAR_TYPE)
-    else()
-      set(CACHE_VAR_TYPE :${CACHE_VAR_TYPE})
-    endif()
-    set(CMAKE_ARGS "${CMAKE_ARGS} -D${CACHE_VAR}${CACHE_VAR_TYPE}=\"${${CACHE_VAR}}\"")
-  endif()
-endforeach()
-message("CMAKE_ARGS: ${CMAKE_ARGS}")
+message("ProjectName: " "${ProjectName}")
 
-function(assign_source_group)
-    foreach(_source IN ITEMS ${ARGN})
-        if (IS_ABSOLUTE "${_source}")
-            file(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
-        else()
-            set(_source_rel "${_source}")
-        endif()
-        get_filename_component(_source_path "${_source_rel}" PATH)
-        string(REPLACE "${SOURCE_ROOT}" "" _source_path_msvc "${_source_path}")
-        string(REPLACE "/" "\\" _source_path_msvc "${_source_path_msvc}")
-        source_group("${_source_path_msvc}" FILES "${_source}")
-    endforeach()
-endfunction(assign_source_group)
+cmake_policy(SET CMP0037 NEW)
 
-project (GDK)
+include("./sourcegroupassigner.cmake")
 
-#"${SOURCE_ROOT}/*.h"
-file(GLOB_RECURSE SOURCES
-    "${SOURCE_ROOT}/*.cpp"
+
+
+#Collect, sort and print common files
+file(GLOB_RECURSE COMMON_SOURCE_FILES
+    "${SOURCE_ROOT}/common/*.cpp"
+    "${SOURCE_ROOT}/common/*.h"
 )
 
-foreach(file_path ${SOURCES})
+message("Common files:")
+foreach(file_path ${COMMON_SOURCE_FILES})
     message(${file_path})
 endforeach()
+assign_source_group(${COMMON_SOURCE_FILES})
 
-assign_source_group(${SOURCES})
+#Collect, sort and print platform files
+if (NOT ${PLATFORM} STREQUAL "")
+    file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES
+        "${SOURCE_ROOT}/${PLATFORM}/*.cpp"
+        "${SOURCE_ROOT}/${PLATFORM}/*.h"
+    )
+    message("${PLATFORM} specific files:")
+    foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
+        message(${file_path})
+    endforeach()
+    assign_source_group(${PLATFORM_SPECIFIC_SOURCE_FILES})
+endif()
 
-add_executable(GDK ${SOURCES})
+#Build the project
+project ("${ProjectName}")
+add_executable("${ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
