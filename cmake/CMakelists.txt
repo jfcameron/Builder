@@ -20,10 +20,10 @@ foreach(var ${Config})
     debug_log("${var} = ${${var}}")
 endforeach()
 
-#Set consts
+# Set consts
 set(SOURCE_ROOT "../src")
 
-#Collect, sort common files, warn on 0
+# Collect, sort common files, warn on 0
 file(GLOB_RECURSE COMMON_SOURCE_FILES "${SOURCE_ROOT}/common/*.cpp" "${SOURCE_ROOT}/common/*.h")
 list(LENGTH COMMON_SOURCE_FILES commonSourceFileCount)
 if (commonSourceFileCount LESS "1")
@@ -35,7 +35,7 @@ foreach(file_path ${COMMON_SOURCE_FILES})
 endforeach()
 filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
-#Collect, sort platform files, warn on 0
+# Collect, sort platform files, warn on 0
 file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${SOURCE_ROOT}/${PLATFORM}/*.cpp" "${SOURCE_ROOT}/${PLATFORM}/*.h")
 list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
 if (platformSpecificSourceFileCount LESS "1")
@@ -47,11 +47,14 @@ foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
 endforeach()
 filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})
 
-#Throw an error if there are no source files present in the project
+# Throw an error if there are no source files present in the project
 if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
     debug_error("There are no source files in the project!")
 endif()
 
-#Build the project
+# Set up user include paths
+include_directories(BEFORE USER "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
+
+# Build the project
 project ("${Config.ProjectName}")
 add_executable("${Config.ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})

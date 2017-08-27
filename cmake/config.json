@@ -1,5 +1,7 @@
 {
     "ProjectName" : "ExampleProject",
     "MajorVersion" : "0",
-    "MinorVersion" : "1"
+    "MinorVersion" : "1",
+    "Libraries" : ["asdf","asdf"]
+
 }
