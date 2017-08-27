@@ -8,6 +8,9 @@ cmake_policy(SET CMP0037 NEW)
 include("lib/debug.cmake")
 include("lib/filter.cmake")
 
+set(CMAKE_BUILD_TYPE Release)
+debug_log("Build type is: ${CMAKE_BUILD_TYPE}")
+
 # Check bash args, bail if required are not present
 if (NOT DEFINED Args.Platform OR Args.Platform STREQUAL "")
     debug_error("A platform must be selected! Insure -DArgs.Platform=\"PlatformName\" arg is present in cmake call!")

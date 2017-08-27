@@ -1,7 +1,6 @@
 {
     "ProjectName" : "ExampleProject",
     "ProjectType" : "Executable",
-    "BuildType" : "Release",
     "MajorVersion" : "0",
     "MinorVersion" : "1",
     "IncludePaths" : [
