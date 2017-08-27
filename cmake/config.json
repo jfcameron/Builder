@@ -2,6 +2,10 @@
     "ProjectName" : "ExampleProject",
     "MajorVersion" : "0",
     "MinorVersion" : "1",
-    "Libraries" : ["asdf","asdf"]
-
+    "StaticLibraries" : 
+    [
+        "../lib/one",
+        "../lib/two",
+        "../lib/three"
+    ]
 }
