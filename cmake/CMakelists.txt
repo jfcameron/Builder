@@ -1,8 +1,18 @@
-cmake_minimum_required (VERSION 2.8.10)
+cmake_minimum_required (VERSION 3.1)
 cmake_policy(SET CMP0037 NEW)
 
-include("./JSONParser.cmake")
-include("./sourcegroupassigner.cmake")
+include("lib/JSONParser.cmake")
+include("lib/sourcegroupassigner.cmake")
+
+file(STRINGS ./config.json config)
+sbeParseJson(example config)
+
+# Now you can use parsed variables.
+foreach(var ${example})
+    message("${var} = ${${var}}")
+endforeach()
+
+#return()
 
 #Set consts
 set(SOURCE_ROOT "../src")
