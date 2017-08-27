@@ -45,7 +45,7 @@ endif()
 
 # Set up include paths
 include_directories(BEFORE USER   "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
-include_directories(BEFORE SYSTEM "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}") #SYSTEM_INCLUDES
+#include_directories(BEFORE SYSTEM "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
 
 # Build the project
 project ("${Config.ProjectName}")
