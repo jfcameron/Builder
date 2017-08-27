@@ -2,7 +2,10 @@
     "ProjectName" : "ExampleProject",
     "MajorVersion" : "0",
     "MinorVersion" : "1",
-    "IncludePaths" : [],
+    "IncludePaths" : [
+        "../src/common",
+        "../src/osx"
+    ],
     "StaticLibraries" : [],
     "DynamicLibraries" : []
 }

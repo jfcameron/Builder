@@ -44,8 +44,9 @@ if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
 endif()
 
 # Set up include paths
-include_directories(BEFORE USER   "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
-#include_directories(BEFORE SYSTEM "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
+debug_log("Include paths: ${Config.IncludePaths}")
+include_directories(BEFORE SYSTEM "${Config.IncludePaths}")
+include_directories(BEFORE "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
 
 # Build the project
 project ("${Config.ProjectName}")
