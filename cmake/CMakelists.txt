@@ -1,24 +1,15 @@
+# Purpose: Generates project files for the given generator
+# Usage: Do not use directly, instead run PreCMakelists.py
 cmake_minimum_required (VERSION 3.1)
 cmake_policy(SET CMP0037 NEW)
 
 include("lib/debug.cmake")
-include("lib/json.cmake")
 include("lib/filter.cmake")
 
 # Check bash args, bail if required are not present
 if (NOT DEFINED PLATFORM OR PLATFORM STREQUAL "")
     debug_error("A platform must be selected! Insure -DPLATFORM=\"PlatformName\" arg is present in cmake call!")
 endif()
-
-# Parse Config.json, bail if malformed or not present
-json_parse(Config "./config.json")
-if (NOT DEFINED Config)
-    debug_error("Config.json is malformed or is not present!")
-endif()
-debug_log("Config json:")
-foreach(var ${Config})
-    debug_log("${var} = ${${var}}")
-endforeach()
 
 # Set consts
 set(SOURCE_ROOT "../src")
@@ -55,8 +46,6 @@ endif()
 # Set up include paths
 include_directories(BEFORE USER   "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}")
 include_directories(BEFORE SYSTEM "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${PLATFORM}") #SYSTEM_INCLUDES
-
-
 
 # Build the project
 project ("${Config.ProjectName}")

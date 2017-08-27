@@ -1,1 +1,1 @@
-cmake ../../cmake/ -G "Xcode" -DPLATFORM="osx"
+python ../../cmake/PreCMakelists.py -platform osx -generator Xcode
