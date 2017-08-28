@@ -12,8 +12,8 @@ set(CMAKE_BUILD_TYPE Release)
 debug_log("Build type is: ${CMAKE_BUILD_TYPE}")
 
 # Check bash args, bail if required are not present
-if (NOT DEFINED Args.Platform OR Args.Platform STREQUAL "")
-    debug_error("A platform must be selected! Insure -DArgs.Platform=\"PlatformName\" arg is present in cmake call!")
+if (NOT DEFINED Args.Platforms OR Args.Platforms STREQUAL "")
+    debug_error("A platform must be selected! Insure -DArgs.Platforms=\"PlatformName\" arg is present in cmake call!")
 endif()
 
 # Set consts
@@ -31,17 +31,33 @@ foreach(file_path ${COMMON_SOURCE_FILES})
 endforeach()
 filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
-# Collect, sort platform files, warn on 0
-file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${SOURCE_ROOT}/${Args.Platform}/*.cpp" "${SOURCE_ROOT}/${Args.Platform}/*.h")
-list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
-if (platformSpecificSourceFileCount LESS "1")
-    debug_warn("There are no platform specific files (${Args.Platform}). Is this correct?")
-endif()
-debug_log("Platform specific files (${Args.Platform}, ${platformSpecificSourceFileCount}):")
-foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
-    debug_log(${file_path})
+# Convert platfom args to a cmake list
+string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
+SET(buffer "")
+foreach(platform ${Args.Platforms})
+    SET(buffer "${buffer};${SOURCE_ROOT}/${platform}")
 endforeach()
-filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})
+SET(Args.Platforms ${buffer})
+UNSET(buffer)
+
+# Collect, sort platform files, warn on 0
+SET(buffer)
+foreach(platform ${Args.Platforms})
+    file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${platform}/*.cpp" "${platform}/*.h")
+    list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
+    if (platformSpecificSourceFileCount LESS "1")
+        debug_warn("There are no platform specific files (${platform}). Is this correct?")
+    else()
+        debug_log("Platform specific files (${platform}, ${platformSpecificSourceFileCount}):")
+        foreach(file_path ${PLATFORM_SPECIFIC_SOURCE_FILES})
+            debug_log(${file_path})
+        endforeach()
+    endif()
+    filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})#[[]]
+    list(APPEND buffer ${PLATFORM_SPECIFIC_SOURCE_FILES})
+endforeach()
+SET(PLATFORM_SPECIFIC_SOURCE_FILES ${buffer})
+UNSET(buffer)
 
 # Throw an error if there are no source files present in the project
 if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
@@ -49,8 +65,10 @@ if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
 endif()
 
 # Set up include paths
-include_directories(BEFORE SYSTEM "${Config.IncludePaths}")
-include_directories(BEFORE "${SOURCE_ROOT}/common" "${SOURCE_ROOT}/${Args.Platform}")
+if (Config.IncludePaths GREATER "1")
+    include_directories(BEFORE SYSTEM "${Config.IncludePaths}")
+endif()
+include_directories(BEFORE "${SOURCE_ROOT}/common")# "${Args.Platforms}/")
 
 # Build the project
 project ("${Config.ProjectName}")

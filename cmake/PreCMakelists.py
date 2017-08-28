@@ -7,7 +7,7 @@ import subprocess
 import json
 
 parser = argparse.ArgumentParser("reads config.json data, parameterizes data into CMakeLists.txt")
-parser.add_argument('-platform',  required=True, type=str, help='Platform code to include in generated project')
+parser.add_argument('-platforms',  required=True, type=str, help='Platform code to include in generated project')
 parser.add_argument('-generator', required=True, type=str, help='generator to use to generated the project')
 args = parser.parse_args()
 
@@ -18,7 +18,7 @@ def error(aMessage):
     print("Error: " + str(aMessage))
     sys.exit()
 
-log("Selected platform: "  + args.platform)
+log("Selected platform: "  + args.platforms)
 log("Selected generator: " + args.generator)
 
 _CMakeDir = "../../cmake/"
@@ -44,7 +44,7 @@ def cmakeArg(aName, aValue):
 subprocess.call([ 
     'cmake',_CMakeDir, 
     '-G' + args.generator, 
-    cmakeArg("Args.Platform", args.platform),
+    cmakeArg("Args.Platforms", args.platforms),
     cmakeArg("Config.ProjectName", config["ProjectName"]),
     cmakeArg("Config.ProjectType", config["ProjectType"]),
     cmakeArg("Config.IncludePaths", '\n'.join(config["IncludePaths"])),
