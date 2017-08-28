@@ -1,0 +1,1 @@
+python ../../cmake/PreCMakelists.py -platform win -generator Visual\ Studio\ 14\ 2015\ Win64
