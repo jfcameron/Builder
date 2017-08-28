@@ -1,1 +1,1 @@
-python ../../cmake/PreCMakelists.py -platforms osx\ win -generator Xcode
+python ../../cmake/PreCMakelists.py -platforms osx\ glfw -generator Xcode

@@ -1,6 +1,8 @@
+//Example file
 #include <iostream>
 
 #include "Platform.h"
+#include "graphics/texture.h"
 
 int main (int argc, char *argv[])
 {
