@@ -5,9 +5,10 @@ import sys
 import argparse
 import subprocess
 import json
+import os
 
 parser = argparse.ArgumentParser("reads config.json data, parameterizes data into CMakeLists.txt")
-parser.add_argument('-platforms',  required=True, type=str, help='Platform code to include in generated project')
+parser.add_argument('-platforms', required=True, type=str, help='Platform code to include in generated project')
 parser.add_argument('-generator', required=True, type=str, help='generator to use to generated the project')
 args = parser.parse_args()
 
@@ -21,11 +22,11 @@ def error(aMessage):
 log("Selected platform: "  + args.platforms)
 log("Selected generator: " + args.generator)
 
-_CMakeDir = "../../cmake/"
+_CMakeDir = "/".join(str(sys.argv[0]).split("/")[:-1])+ "/"
 
 _JsonFile = ""
 try:
-    _JsonFile = open(_CMakeDir+"config.json").read()
+    _JsonFile = open(_CMakeDir+"../config.json").read()
 except:
     error("The config.json file does not exist!")
 

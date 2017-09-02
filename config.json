@@ -1,5 +1,6 @@
 {
     "ProjectName" : "ExampleProject",
+    "BriefDescription" : "an example project",
     "ProjectType" : "Executable",
     "MajorVersion" : "0",
     "MinorVersion" : "1",
