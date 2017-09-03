@@ -3,8 +3,9 @@ Multiplatform build environment for C++ projects.
 Requires bash, python, cmake
 
 ## Usage
-* write config.json to your project root, 
-* write shell scripts to generate project files for your IDEs
+* write config.json to your project root to setup project metadata
+* write shell scripts that calls cmake/generateproject.py to generate project files for your IDEs and configurations
+* write shell script that calls doxygen/generatedocuments.py to generate doxygen manual for your project
 
 ## Config.json
 * ProjectName : string, name of project.
