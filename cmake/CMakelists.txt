@@ -1,15 +1,12 @@
 # Purpose: Generates project files using the given generator
 # Variables prefixed with Args.* and Config.* are required commandline arguments
 # and are most conveniently supplied via the accompanying python script "PreCMakelists.py"
-# Usage: Do not use directly, instead run PreCMakelists.py
+# Usage: Do not use directly, instead run generateproject.py
 cmake_minimum_required (VERSION 3.0)
 cmake_policy(SET CMP0037 NEW)
 
 include("lib/debug.cmake")
 include("lib/filter.cmake")
-
-set(CMAKE_BUILD_TYPE Release)
-debug_log("Build type is: ${CMAKE_BUILD_TYPE}")
 
 # Check bash args, bail if required are not present
 if (NOT DEFINED Args.Platforms OR Args.Platforms STREQUAL "")
@@ -71,11 +68,11 @@ include_directories(BEFORE "${Config.SourceCodeRootPath}/common")# "${Args.Platf
 project ("${Config.ProjectName}")
 
 if (Config.ProjectType STREQUAL "Executable")
-    add_executable("${Config.ProjectType}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
+    add_executable("${Config.ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
 elseif(Config.ProjectType STREQUAL "StaticLibrary")
-    add_library("${Config.ProjectType}" STATIC ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
+    add_library("${Config.ProjectName}" STATIC ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
 elseif(Config.ProjectType STREQUAL "SharedLibrary")
-    add_library("${Config.ProjectType}" SHARED ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
+    add_library("${Config.ProjectName}" SHARED ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
 else()
     debug_error("Config.ProjectType = ${Config.ProjectType}\nConfig.ProjectType is an enum and must be: Executable, StaticLibrary or SharedLibrary")
 endif()
