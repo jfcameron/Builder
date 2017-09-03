@@ -1,7 +1,0 @@
-/*! \mainpage Mainpage
- *
- * \section intro_sec Introduction
- *
- * Hello
- *
- */
