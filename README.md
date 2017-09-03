@@ -1,9 +1,10 @@
-# CppProjectTemplate
-Template for multi-platform, IDE agnostic C++ projects. Requires CMake, Python and Bash.
+# Builder
+Multiplatform build environment for C++ projects.
+Requires bash, python, cmake
 
 ## Usage
-* Edit Config.json
-* edit build/yourplatform/generate.sh to use a generator available on your machine, run generate.sh
+* write config.json to your project root, 
+* write shell scripts to generate project files for your IDEs
 
 ## Config.json
 * ProjectName : string, name of project.
