@@ -24,14 +24,13 @@ log("Selected platforms: "  + args.platforms)
 log("Selected generator: " + args.generator)
 
 _CMakeDir = "/".join(str(sys.argv[0]).split("/")[:-1])+ "/"
-_ConfigURI = os.getcwd() + "/" + args.configPath + "/config.json"
 
+_ConfigURI = os.getcwd() + "/" + args.configPath + "/config.json"
 _JsonFile = ""
 try:
     _JsonFile = open(_ConfigURI).read()
 except:
     error("The config.json file does not exist!")
-
 config = {}
 try:
     config = json.loads(_JsonFile)

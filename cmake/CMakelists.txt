@@ -1,6 +1,8 @@
 # Purpose: Generates project files using the given generator
 # Variables prefixed with Args.* and Config.* are required commandline arguments
 # and are most conveniently supplied via the accompanying python script "PreCMakelists.py"
+# Args.* refers to values that must be supplied when calling PreCMakelists.py, Conifg.* are those
+# collected by the python script from the project config.json file
 # Usage: Do not use directly, instead run generateproject.py
 cmake_minimum_required (VERSION 3.0)
 cmake_policy(SET CMP0037 NEW)
