@@ -16,11 +16,8 @@ if (NOT DEFINED Args.Platforms OR Args.Platforms STREQUAL "")
     debug_error("A platform must be selected! Insure -DArgs.Platforms=\"PlatformName\" arg is present in cmake call!")
 endif()
 
-# Set consts
-set(SOURCE_ROOT "../src")
-
 # Collect, sort common files, warn on 0
-file(GLOB_RECURSE COMMON_SOURCE_FILES "${SOURCE_ROOT}/common/*.cpp" "${SOURCE_ROOT}/common/*.h")
+file(GLOB_RECURSE COMMON_SOURCE_FILES "${Config.SourceCodeRootPath}/common/*.cpp" "${Config.SourceCodeRootPath}/common/*.h")
 list(LENGTH COMMON_SOURCE_FILES commonSourceFileCount)
 if (commonSourceFileCount LESS "1")
     debug_warn("There are no common files. Is this correct?")
@@ -35,7 +32,7 @@ filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
 SET(buffer "")
 foreach(platform ${Args.Platforms})
-    SET(buffer "${buffer};${SOURCE_ROOT}/${platform}")
+    SET(buffer "${buffer};${Config.SourceCodeRootPath}/${platform}")
 endforeach()
 SET(Args.Platforms ${buffer})
 UNSET(buffer)
@@ -68,7 +65,7 @@ endif()
 if (Config.IncludePaths GREATER "1")
     include_directories(BEFORE SYSTEM "${Config.IncludePaths}")
 endif()
-include_directories(BEFORE "${SOURCE_ROOT}/common")# "${Args.Platforms}/")
+include_directories(BEFORE "${Config.SourceCodeRootPath}/common")# "${Args.Platforms}/")
 
 # Build the project
 project ("${Config.ProjectName}")
