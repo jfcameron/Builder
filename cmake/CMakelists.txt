@@ -118,13 +118,7 @@ UNSET(buffer)
 
 
 # Collect External header paths
-#[[include_directories(BEFORE "${Config.SourceCodeRootPath}/common")
-SET(buffer "")
-foreach(platform ${Args.Platforms})
-    SET(buffer "${buffer};${Config.SourceCodeRootPath}/${platform}")
-endforeach()
-include_directories(BEFORE "${buffer}")
-UNSET(buffer)]]
+
 
 # Build the project
 project ("${Config.ProjectName}")
@@ -142,10 +136,10 @@ target_link_libraries("${Config.ProjectName}" ${PLATFORM_LIBRARY_OBJECTS})
 # Setup build paths
 set_target_properties( 
     "${Config.ProjectName}" PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/bin 
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/bin
-    LIBRARY_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/lib
-    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/lib
-    ARCHIVE_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/arc
-    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/arc
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/debug 
+    LIBRARY_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/debug
+    ARCHIVE_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/debug
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/release
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/release
+    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/release
 )
