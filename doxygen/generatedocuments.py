@@ -12,13 +12,13 @@ parser.add_argument('-configPath', required=True, type=str, help='path to projec
 args = parser.parse_args()
 
 def log(aMessage):
-    print("-- " + str(aMessage))
+    print("" + str(aMessage))
 
 def error(aMessage):
     print("Error: " + str(aMessage))
     sys.exit()
 
-_ConfigURI = os.getcwd() + "/" + args.configPath + "/config.json"#_ConfigURI = os.getcwd()+"/config.json"
+_ConfigURI = os.getcwd() + "/" + args.configPath + "/config.json"
 _DoxygenDirectory = "/".join(str(sys.argv[0]).split("/")[:-1])+ "/"
 
 _JsonFile = ""
@@ -36,6 +36,8 @@ except Exception as ex:
 pretty = json.dumps(config, indent = 2)
 log("config.json: \n"+pretty)
 
+_SourceRoot =  os.getcwd() + "/" + args.configPath + "/" + config["SourceCodeRootPath"]
+
 _Args = []
 def addArg(aKey, aValue):
     _Args.append("echo '" + aKey + '=' + aValue + "'")
@@ -44,9 +46,14 @@ def addArg(aKey, aValue):
 addArg("PROJECT_NAME",   config["ProjectName"])
 addArg("PROJECT_NUMBER", config["MajorVersion"] + "." + config["MinorVersion"])
 addArg("PROJECT_BRIEF",  '"' + config["BriefDescription"] + '"')
+addArg("INPUT",  _SourceRoot)
+
+#INPUT                  = ./mainpage.txt \
+#                         ./src
+
 
 #Const args
-addArg("HTML_STYLESHEET", _DoxygenDirectory + "doxyStyle.css")
+#addArg("HTML_STYLESHEET", _DoxygenDirectory + "doxyStyle.css")
 
 _Args = "; ".join(_Args)
 

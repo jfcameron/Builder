@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_BRIEF          = "Game development kit in C++11"
+PROJECT_BRIEF          = "Unknown"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = .
 CREATE_SUBDIRS         = NO
@@ -110,8 +110,8 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./mainpage.txt \
-                         ./src
+#INPUT                  = ./mainpage.txt \
+#                         ./src
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
