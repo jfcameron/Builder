@@ -41,6 +41,7 @@ log(_ConfigURI + ": \n"+pretty)
 
 _SourceCodeRootPath    = os.getcwd() + '/' + args.configPath + '/' + config["SourceCodeRootPath"]
 _StaticLibraryRootPath = os.getcwd() + '/' + args.configPath + '/' + config["StaticLibraryRootPath"]
+_BuildRootPath         = os.getcwd() + '/' + args.configPath + '/' + config["BuildRootPath"]
 
 def cmakeArg(aName, aValue):
     return '-D' + str(aName) + '=' + aValue
@@ -48,10 +49,10 @@ def cmakeArg(aName, aValue):
 subprocess.call([ 
     'cmake',_CMakeDir, 
     '-G' + args.generator, 
-    cmakeArg("Args.Platforms", args.platforms),
-    cmakeArg("Config.ProjectName", config["ProjectName"]),
-    cmakeArg("Config.ProjectType", config["ProjectType"]),
-    cmakeArg("Config.SourceCodeRootPath", _SourceCodeRootPath),
+    cmakeArg("Args.Platforms",               args.platforms),
+    cmakeArg("Config.ProjectName",           config["ProjectName"]),
+    cmakeArg("Config.ProjectType",           config["ProjectType"]),
+    cmakeArg("Config.BuildRootPath",         _BuildRootPath),
+    cmakeArg("Config.SourceCodeRootPath",    _SourceCodeRootPath),
     cmakeArg("Config.StaticLibraryRootPath", _StaticLibraryRootPath),
-    cmakeArg("Config.IncludePaths",'\n'.join(config["IncludePaths"]))
 ])

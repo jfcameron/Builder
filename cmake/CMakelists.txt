@@ -6,7 +6,6 @@
 # Usage: Do not use directly, instead run generateproject.py
 cmake_minimum_required (VERSION 3.1)
 cmake_policy(SET CMP0037 NEW)
-set (CMAKE_CXX_STANDARD 11)
 
 include("lib/debug.cmake")
 include("lib/filter.cmake")
@@ -19,8 +18,20 @@ endif()
 # Convert platform args to cmake list
 string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
 
+# Set compiler args
+set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
+
 # Collect, sort common files, warn on 0
-file(GLOB_RECURSE COMMON_SOURCE_FILES "${Config.SourceCodeRootPath}/common/*.cpp" "${Config.SourceCodeRootPath}/common/*.h")
+file(
+    GLOB_RECURSE COMMON_SOURCE_FILES 
+    "${Config.SourceCodeRootPath}/common/*.c"
+    "${Config.SourceCodeRootPath}/common/*.cpp"
+    "${Config.SourceCodeRootPath}/common/*.cxx" 
+    "${Config.SourceCodeRootPath}/common/*.h"
+    "${Config.SourceCodeRootPath}/common/*.hpp"
+    "${Config.SourceCodeRootPath}/common/*.hxx"
+)
 list(LENGTH COMMON_SOURCE_FILES commonSourceFileCount)
 if (commonSourceFileCount LESS "1")
     debug_warn("There are no common files. Is this correct?")
@@ -31,7 +42,7 @@ foreach(file_path ${COMMON_SOURCE_FILES})
 endforeach()
 filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
-# Collect, sort platform source files
+# Collect, sort platform source files, warn on 0
 SET(buffer "")
 foreach(platform ${Args.Platforms})
     SET(buffer "${buffer};${Config.SourceCodeRootPath}/${platform}")
@@ -40,7 +51,15 @@ SET(PlatformsSource ${buffer})
 UNSET(buffer)
 SET(buffer)
 foreach(platform ${PlatformsSource})
-file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${platform}/*.c" "${platform}/*.cpp" "${platform}/*.cxx" "${platform}/*.h" "${platform}/*.hpp" "${platform}/*.hxx")
+    file(
+        GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES 
+        "${platform}/*.c" 
+        "${platform}/*.cpp" 
+        "${platform}/*.cxx" 
+        "${platform}/*.h" 
+        "${platform}/*.hpp" 
+        "${platform}/*.hxx"
+    )
     list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
     if (platformSpecificSourceFileCount LESS "1")
         debug_warn("There are no platform specific files (${platform}). Is this correct?")
@@ -58,7 +77,7 @@ UNSET(buffer)
 
 # Throw an error if there are no source files present in the project
 if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
-debug_error("There are no source files in the project!")
+    debug_error("There are no source files in the project!")
 endif()
 
 # Collect, sort library objects
@@ -95,6 +114,18 @@ endforeach()
 include_directories(BEFORE "${buffer}")
 UNSET(buffer)
 
+# Collect External libraries
+
+
+# Collect External header paths
+#[[include_directories(BEFORE "${Config.SourceCodeRootPath}/common")
+SET(buffer "")
+foreach(platform ${Args.Platforms})
+    SET(buffer "${buffer};${Config.SourceCodeRootPath}/${platform}")
+endforeach()
+include_directories(BEFORE "${buffer}")
+UNSET(buffer)]]
+
 # Build the project
 project ("${Config.ProjectName}")
 if (Config.ProjectType STREQUAL "Executable")
@@ -107,3 +138,14 @@ else()
     debug_error("Config.ProjectType = ${Config.ProjectType}\nConfig.ProjectType is an enum and must be: Executable, StaticLibrary or SharedLibrary")
 endif()
 target_link_libraries("${Config.ProjectName}" ${PLATFORM_LIBRARY_OBJECTS})
+
+# Setup build paths
+set_target_properties( 
+    "${Config.ProjectName}" PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/bin 
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/bin
+    LIBRARY_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/lib
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/lib
+    ARCHIVE_OUTPUT_DIRECTORY_DEBUG   ${Config.BuildRootPath}/arc
+    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${Config.BuildRootPath}/arc
+)
