@@ -1,11 +1,11 @@
 #Purpose collects project configuration data, passes to cmake, which generates the project files
 #Usage: -platform osx -generator Xcode
 #!/usr/bin/python
-import sys
 import argparse
 import json
 import os
 import subprocess
+import sys
 
 parser = argparse.ArgumentParser("reads config.json data, parameterizes data into CMakeLists.txt")
 parser.add_argument('-platforms',  required=True, type=str, help='Platform code to include in generated project')
@@ -20,7 +20,7 @@ def error(aMessage):
     print("Error: " + str(aMessage))
     sys.exit()
 
-log("Selected platforms: "  + args.platforms)
+log("Selected platforms: " + args.platforms)
 log("Selected generator: " + args.generator)
 
 _CMakeDir = "/".join(str(sys.argv[0]).split("/")[:-1])+ "/"
@@ -39,7 +39,8 @@ except Exception as ex:
 pretty = json.dumps(config, indent = 2)
 log(_ConfigURI + ": \n"+pretty)
 
-_SourceCodeRootPath = os.getcwd() + '/' + args.configPath + '/' + config["SourceCodeRootPath"]
+_SourceCodeRootPath    = os.getcwd() + '/' + args.configPath + '/' + config["SourceCodeRootPath"]
+_StaticLibraryRootPath = os.getcwd() + '/' + args.configPath + '/' + config["StaticLibraryRootPath"]
 
 def cmakeArg(aName, aValue):
     return '-D' + str(aName) + '=' + aValue
@@ -51,5 +52,6 @@ subprocess.call([
     cmakeArg("Config.ProjectName", config["ProjectName"]),
     cmakeArg("Config.ProjectType", config["ProjectType"]),
     cmakeArg("Config.SourceCodeRootPath", _SourceCodeRootPath),
-    cmakeArg("Config.IncludePaths", '\n'.join(config["IncludePaths"])),
+    cmakeArg("Config.StaticLibraryRootPath", _StaticLibraryRootPath),
+    cmakeArg("Config.IncludePaths",'\n'.join(config["IncludePaths"]))
 ])

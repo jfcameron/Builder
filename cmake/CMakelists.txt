@@ -4,8 +4,9 @@
 # Args.* refers to values that must be supplied when calling PreCMakelists.py, Conifg.* are those
 # collected by the python script from the project config.json file
 # Usage: Do not use directly, instead run generateproject.py
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.1)
 cmake_policy(SET CMP0037 NEW)
+set (CMAKE_CXX_STANDARD 11)
 
 include("lib/debug.cmake")
 include("lib/filter.cmake")
@@ -14,6 +15,9 @@ include("lib/filter.cmake")
 if (NOT DEFINED Args.Platforms OR Args.Platforms STREQUAL "")
     debug_error("A platform must be selected! Insure -DArgs.Platforms=\"PlatformName\" arg is present in cmake call!")
 endif()
+
+# Convert platform args to cmake list
+string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
 
 # Collect, sort common files, warn on 0
 file(GLOB_RECURSE COMMON_SOURCE_FILES "${Config.SourceCodeRootPath}/common/*.cpp" "${Config.SourceCodeRootPath}/common/*.h")
@@ -27,19 +31,16 @@ foreach(file_path ${COMMON_SOURCE_FILES})
 endforeach()
 filter_assignSourceGroups(${COMMON_SOURCE_FILES})
 
-# Convert platfom args to a cmake list
-string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
+# Collect, sort platform source files
 SET(buffer "")
 foreach(platform ${Args.Platforms})
     SET(buffer "${buffer};${Config.SourceCodeRootPath}/${platform}")
 endforeach()
-SET(Args.Platforms ${buffer})
+SET(PlatformsSource ${buffer})
 UNSET(buffer)
-
-# Collect, sort platform files, warn on 0
 SET(buffer)
-foreach(platform ${Args.Platforms})
-    file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${platform}/*.cpp" "${platform}/*.h")
+foreach(platform ${PlatformsSource})
+file(GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES "${platform}/*.c" "${platform}/*.cpp" "${platform}/*.cxx" "${platform}/*.h" "${platform}/*.hpp" "${platform}/*.hxx")
     list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
     if (platformSpecificSourceFileCount LESS "1")
         debug_warn("There are no platform specific files (${platform}). Is this correct?")
@@ -49,7 +50,7 @@ foreach(platform ${Args.Platforms})
             debug_log(${file_path})
         endforeach()
     endif()
-    filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})#[[]]
+    filter_assignSourceGroups(${PLATFORM_SPECIFIC_SOURCE_FILES})
     list(APPEND buffer ${PLATFORM_SPECIFIC_SOURCE_FILES})
 endforeach()
 SET(PLATFORM_SPECIFIC_SOURCE_FILES ${buffer})
@@ -57,18 +58,45 @@ UNSET(buffer)
 
 # Throw an error if there are no source files present in the project
 if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
-    debug_error("There are no source files in the project!")
+debug_error("There are no source files in the project!")
 endif()
 
+# Collect, sort library objects
+SET(buffer "")
+foreach(platform ${Args.Platforms})
+    SET(buffer "${buffer};${Config.StaticLibraryRootPath}/${platform}")
+endforeach()
+SET(PlatformLibs ${buffer})
+UNSET(buffer)
+SET(buffer)
+foreach(platform ${PlatformLibs})
+    file(GLOB_RECURSE PLATFORM_LIBRARY_OBJECTS "${platform}/*.a")
+    list(LENGTH PLATFORM_LIBRARY_OBJECTS platformSpecificLibraryCount)
+    if (platformSpecificLibraryCount LESS "1")
+        debug_warn("No library objects detected for ${platform}")
+    else()
+        debug_log("Platform library files (${platform}, ${platformSpecificLibraryCount}):")
+        foreach(file_path ${PLATFORM_LIBRARY_OBJECTS})
+            debug_log(${file_path})
+        endforeach()
+    endif()
+    filter_assignSourceGroups(${PLATFORM_LIBRARY_OBJECTS})
+    list(APPEND buffer ${PLATFORM_LIBRARY_OBJECTS})
+endforeach()
+SET(PLATFORM_LIBRARY_OBJECTS ${buffer})
+UNSET(buffer)
+
 # Set up include paths
-if (Config.IncludePaths GREATER "1")
-    include_directories(BEFORE SYSTEM "${Config.IncludePaths}")
-endif()
-include_directories(BEFORE "${Config.SourceCodeRootPath}/common")# "${Args.Platforms}/")
+include_directories(BEFORE "${Config.SourceCodeRootPath}/common")
+SET(buffer "")
+foreach(platform ${Args.Platforms})
+    SET(buffer "${buffer};${Config.SourceCodeRootPath}/${platform}")
+endforeach()
+include_directories(BEFORE "${buffer}")
+UNSET(buffer)
 
 # Build the project
 project ("${Config.ProjectName}")
-
 if (Config.ProjectType STREQUAL "Executable")
     add_executable("${Config.ProjectName}" ${COMMON_SOURCE_FILES} ${PLATFORM_SPECIFIC_SOURCE_FILES})
 elseif(Config.ProjectType STREQUAL "StaticLibrary")
@@ -78,3 +106,4 @@ elseif(Config.ProjectType STREQUAL "SharedLibrary")
 else()
     debug_error("Config.ProjectType = ${Config.ProjectType}\nConfig.ProjectType is an enum and must be: Executable, StaticLibrary or SharedLibrary")
 endif()
+target_link_libraries("${Config.ProjectName}" ${PLATFORM_LIBRARY_OBJECTS})
