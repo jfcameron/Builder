@@ -136,6 +136,26 @@ elseif(Config.ProjectType STREQUAL "SharedLibrary")
 else()
     debug_error("Config.ProjectType = ${Config.ProjectType}\nConfig.ProjectType is an enum and must be: Executable, StaticLibrary or SharedLibrary")
 endif()
+
+#------HACK -- MUST GENERALIZE
+FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+FIND_LIBRARY(CORE_VIDEO CoreVideo)
+FIND_LIBRARY(IO_KIT IOKit)
+FIND_LIBRARY(OPENGL OpenGL)
+
+target_link_libraries(
+    "${Config.ProjectName}" 
+    ${COCOA_LIBRARY} 
+    ${CORE_VIDEO} 
+    ${IO_KIT} 
+    ${OPENGL}
+)
+#------HACK
+
+
+
+
+#add libs
 target_link_libraries("${Config.ProjectName}" ${PLATFORM_LIBRARY_OBJECTS})
 
 # Setup build paths
