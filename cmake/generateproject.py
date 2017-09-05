@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import pprint
 
 parser = argparse.ArgumentParser("reads config.json data, parameterizes data into CMakeLists.txt")
 parser.add_argument('-platforms',  required=True, type=str, help='Platform code to include in generated project')
@@ -42,6 +43,7 @@ log(_ConfigURI + ": \n"+pretty)
 _SourceCodeRootPath    = os.getcwd() + '/' + args.configPath + '/' + config["SourceCodeRootPath"]
 _StaticLibraryRootPath = os.getcwd() + '/' + args.configPath + '/' + config["StaticLibraryRootPath"]
 _BuildRootPath         = os.getcwd() + '/' + args.configPath + '/' + config["BuildRootPath"]
+_ExternalHeaderPaths = ";".join([(os.getcwd() + '/' + args.configPath + '/' + "{0}").format(i) for  i in config["ExternalHeaderPaths"]])
 
 def cmakeArg(aName, aValue):
     return '-D' + str(aName) + '=' + aValue
@@ -52,6 +54,7 @@ subprocess.call([
     cmakeArg("Args.Platforms",               args.platforms),
     cmakeArg("Config.ProjectName",           config["ProjectName"]),
     cmakeArg("Config.ProjectType",           config["ProjectType"]),
+    cmakeArg("Config.ExternalHeaderPaths",   _ExternalHeaderPaths),
     cmakeArg("Config.BuildRootPath",         _BuildRootPath),
     cmakeArg("Config.SourceCodeRootPath",    _SourceCodeRootPath),
     cmakeArg("Config.StaticLibraryRootPath", _StaticLibraryRootPath),

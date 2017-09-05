@@ -15,8 +15,9 @@ if (NOT DEFINED Args.Platforms OR Args.Platforms STREQUAL "")
     debug_error("A platform must be selected! Insure -DArgs.Platforms=\"PlatformName\" arg is present in cmake call!")
 endif()
 
-# Convert platform args to cmake list
+# Convert list args format to cmake list format
 string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
+#string(REPLACE " " ";" Args.Platforms ${Args.Platforms})
 
 # Set compiler args
 set (CMAKE_CXX_STANDARD 11)
@@ -50,6 +51,7 @@ endforeach()
 SET(PlatformsSource ${buffer})
 UNSET(buffer)
 SET(buffer)
+set(totalPlatformSpecificSourceFileCount 0)
 foreach(platform ${PlatformsSource})
     file(
         GLOB_RECURSE PLATFORM_SPECIFIC_SOURCE_FILES 
@@ -61,6 +63,7 @@ foreach(platform ${PlatformsSource})
         "${platform}/*.hxx"
     )
     list(LENGTH PLATFORM_SPECIFIC_SOURCE_FILES platformSpecificSourceFileCount)
+    MATH(EXPR totalPlatformSpecificSourceFileCount "${totalPlatformSpecificSourceFileCount}+${platformSpecificSourceFileCount}")
     if (platformSpecificSourceFileCount LESS "1")
         debug_warn("There are no platform specific files (${platform}). Is this correct?")
     else()
@@ -76,7 +79,7 @@ SET(PLATFORM_SPECIFIC_SOURCE_FILES ${buffer})
 UNSET(buffer)
 
 # Throw an error if there are no source files present in the project
-if (commonSourceFileCount LESS "1" AND platformSpecificSourceFileCount LESS "1")
+if (commonSourceFileCount LESS "1" AND totalPlatformSpecificSourceFileCount LESS "1")
     debug_error("There are no source files in the project!")
 endif()
 
@@ -115,10 +118,12 @@ include_directories(BEFORE "${buffer}")
 UNSET(buffer)
 
 # Collect External libraries
-
+#...
 
 # Collect External header paths
-
+if (NOT "${Config.ExternalHeaderPaths}" STREQUAL "")
+    include_directories(BEFORE "${Config.ExternalHeaderPaths}")
+endif()
 
 # Build the project
 project ("${Config.ProjectName}")
