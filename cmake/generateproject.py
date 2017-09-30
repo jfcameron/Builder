@@ -1,6 +1,7 @@
-#Purpose collects project configuration data, passes to cmake, which generates the project files
-#Usage: -platform osx -generator Xcode
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Purpose collects project configuration data, passes to cmake, which generates the project files
+# Usage: -platform osx -generator Xcode
 import argparse
 import json
 import os
